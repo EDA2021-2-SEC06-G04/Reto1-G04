@@ -1,1 +1,3 @@
-Utilizar los archivos de datos que se encuentran en Sicuaplus
+Integrantes:
+Laura Guiza,
+Pablo Pedreros, 202112491, p.pedreros@uniandes.edu.co
