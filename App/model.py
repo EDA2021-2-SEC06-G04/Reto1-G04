@@ -36,13 +36,36 @@ los mismos.
 """
 
 # Construccion de modelos
+def newCatalog():
+    """
+    Inicializa el catálogo de obras. Crea una lista vacia para guardar
+    todas las obras, adicionalmente, crea una lista vacia para los artistas.
+     Retorna el catalogo inicializado.
+    """
+    catalog = {'obras': None,
+               'artistas': None,}
+
+    catalog['obras'] = lt.newList('ARRAY_LIST')
+    catalog['artistas'] = lt.newList('ARRAY_LIST')
+
+    return catalog
 
 # Funciones para agregar informacion al catalogo
+def addObra(catalog, obra):
+    lt.addLast(catalog['obras'], obra)
+
+def addArtista(catalog, artista):
+    lt.addLast(catalog['artistas'], artista)
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def compareartists(artistaname1, artista):
+    if (artistaname1.lower() in artista['name'].lower()):
+        return 0
+    return -1
 
 # Funciones de ordenamiento
