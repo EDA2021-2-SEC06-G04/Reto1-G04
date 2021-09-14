@@ -25,7 +25,10 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+import sys
 
+default_limit = 1000
+sys.setrecursionlimit(default_limit*10)
 
 """
 La vista se encarga de la interacción con el usuario
@@ -46,11 +49,11 @@ def printMenu():
     print("0- Salir")
 
 
-def initCatalog():
+def initCatalog(estrucutra):
     """
     Inicializa el catalogo de obras
     """
-    return controller.initCatalog()
+    return controller.initCatalog(estrucutra)
 
 def loadData(catalog):
     """
@@ -67,25 +70,20 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
+        estrucutra = input('Escoja el tipo de estructura de datos escribiendo "ARRAY_LIST" o "SINGLE_LINKED": ')
+        while (estrucutra != "ARRAY_LIST") and (estrucutra != "SINGLE_LINKED"):
+            estructura = input('Escoja un tipo de estructura de datos válido escribiendo "ARRAY_LIST" o "SINGLE_LINKED": ')
         print("Cargando información de los archivos ....")
-        catalog = initCatalog()
+        catalog = initCatalog(estrucutra)
         loadData(catalog)
-        print(catalog['artistas'])
         print('Obras cargadas: ' + str(lt.size(catalog['obras'])))
         print('Artistas cargados: ' + str(lt.size(catalog['artistas'])))
         print('Últimos 3 elementos de obras:')
-        x=3
-        while x >= 1:
-
-            print(catalog['obras']['elements'][lt.size(catalog['obras']) - x]) 
-            x-=1
-    
+        tresobras = lt.subList(catalog['obras'],lt.size(catalog['obras'])-2,3)
+        print(tresobras)
         print('Últimos 3 elementos de artistas:')
-        x=3
-        while x >= 1:
-
-            print(catalog['artistas']['elements'][lt.size(catalog['artistas']) - x])
-            x-=1
+        tresartistas = lt.subList(catalog['artistas'],lt.size(catalog['artistas'])-2,3)
+        print(tresartistas)
 
     elif int(inputs[0]) == 2:
         pass

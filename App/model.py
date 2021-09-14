@@ -36,7 +36,7 @@ los mismos.
 """
 
 # Construccion de modelos
-def newCatalog():
+def newCatalog(estructura):
     """
     Inicializa el catálogo de obras. Crea una lista vacia para guardar
     todas las obras, adicionalmente, crea una lista vacia para los artistas.
@@ -45,8 +45,8 @@ def newCatalog():
     catalog = {'obras': None,
                'artistas': None,}
 
-    catalog['obras'] = lt.newList('ARRAY_LIST')
-    catalog['artistas'] = lt.newList('ARRAY_LIST')
+    catalog['obras'] = lt.newList(estructura)
+    catalog['artistas'] = lt.newList(estructura)
 
     return catalog
 
@@ -67,5 +67,15 @@ def compareartists(artistaname1, artista):
     if (artistaname1.lower() in artista['name'].lower()):
         return 0
     return -1
+
+def cmpArtworkByDateAcquired(artwork1, artwork2):
+    """
+    Devuelve verdadero (True) si el 'DateAcquired' de artwork1 es menores que el de artwork2
+    Args:
+    artwork1: informacion de la primera obra que incluye su valor 'DateAcquired'
+    artwork2: informacion de la segunda obra que incluye su valor 'DateAcquired'
+    """
+    return artwork1['DateAcquired'] < artwork2['DateAcquired']
+
 
 # Funciones de ordenamiento
