@@ -26,6 +26,7 @@ import controller
 from DISClib.ADT import list as lt
 assert cf
 import sys
+import time
 
 default_limit = 1000
 sys.setrecursionlimit(default_limit*10)
@@ -49,17 +50,23 @@ def printMenu():
     print("0- Salir")
 
 
-def initCatalog(estrucutra):
+def initCatalog(estructura):
     """
     Inicializa el catalogo de obras
     """
-    return controller.initCatalog(estrucutra)
+    return controller.initCatalog(estructura)
 
 def loadData(catalog):
     """
     Carga las obras en la estructura de datos
     """
     controller.loadData(catalog)
+
+def organizarcatalog(catalog,ordenamiento):
+    """
+    Organiza el catálogo por el método elegido
+    """
+    controller.organizarcatalog(catalog,ordenamiento)
 
 catalog = None
 
@@ -70,11 +77,11 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        estrucutra = input('Escoja el tipo de estructura de datos escribiendo "ARRAY_LIST" o "SINGLE_LINKED": ')
-        while (estrucutra != "ARRAY_LIST") and (estrucutra != "SINGLE_LINKED"):
+        estructura = input('Escoja el tipo de estructura de datos escribiendo "ARRAY_LIST" o "SINGLE_LINKED": ')
+        while (estructura != "ARRAY_LIST") and (estructura != "SINGLE_LINKED"):
             estructura = input('Escoja un tipo de estructura de datos válido escribiendo "ARRAY_LIST" o "SINGLE_LINKED": ')
         print("Cargando información de los archivos ....")
-        catalog = initCatalog(estrucutra)
+        catalog = initCatalog(estructura)
         loadData(catalog)
         print('Obras cargadas: ' + str(lt.size(catalog['obras'])))
         print('Artistas cargados: ' + str(lt.size(catalog['artistas'])))
@@ -85,8 +92,22 @@ while True:
         tresartistas = lt.subList(catalog['artistas'],lt.size(catalog['artistas'])-2,3)
         print(tresartistas)
 
-    elif int(inputs[0]) == 2:
-        pass
+    elif int(inputs[0]) == 3:
+        ordenamiento = input('Escoja el tipo de ordenamiento escribiendo "Insertion", "Shell", "Merge" o "Quick": ')
+        while (ordenamiento != "Insertion") and (ordenamiento != "Shell" and ordenamiento != "Merge") and (ordenamiento != "Quick"):
+            ordenamiento = input('Escoja un tipo de ordenamiento válido escribiendo "Insertion", "Shell", "Merge" o "Quick": ')
+        tamano_muestra = input('Indique el número de elementos de la muestra: ')
+        while int(tamano_muestra) > lt.size(catalog['obras']):
+            tamano_muestra = input('Indique un número menor al total de obras almacenadas: ')
+        muestra = lt.subList(catalog['obras'],1,int(tamano_muestra))
+        start_time = time.process_time()
+        print('Organizando la muestra ...')
+        organizarcatalog(muestra,ordenamiento)
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print('El programa se demoró '+ str(elapsed_time_mseg) + ' en ordenar los datos de muestra por medio de ' + ordenamiento + 'sort.')
+
+
 
     else:
         sys.exit(0)

@@ -69,5 +69,10 @@ def loadArtistas(catalog):
         model.addArtista(catalog, artista)
 
 # Funciones de ordenamiento
+def organizarcatalog(catalog,ordenamiento):
+    """
+    Organiza el catálogo por el método elegido
+    """
+    model.organizarcatalog(catalog,ordenamiento)
 
 # Funciones de consulta sobre el catálogo

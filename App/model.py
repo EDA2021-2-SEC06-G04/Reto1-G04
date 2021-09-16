@@ -27,7 +27,10 @@
 
 import config as cf
 from DISClib.ADT import list as lt
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import shellsort
+from DISClib.Algorithms.Sorting import quicksort 
+from DISClib.Algorithms.Sorting import insertionsort
+from DISClib.Algorithms.Sorting import mergesort
 assert cf
 
 """
@@ -79,3 +82,17 @@ def cmpArtworkByDateAcquired(artwork1, artwork2):
 
 
 # Funciones de ordenamiento
+
+def organizarcatalog(catalog,ordenamiento):
+    """
+    Organiza el catálogo por el método elegido
+    """
+    if ordenamiento == "Insertion":
+        insertionsort.sort(catalog,cmpArtworkByDateAcquired)
+    elif ordenamiento == "Shell":
+        shellsort.sort(catalog,cmpArtworkByDateAcquired)
+    elif ordenamiento == "Merge":
+        mergesort.sort(catalog,cmpArtworkByDateAcquired)
+    elif ordenamiento == "Quick":
+        quicksort.sort(catalog,cmpArtworkByDateAcquired)
+    
