@@ -133,11 +133,9 @@ def rangoobras(obras,fecha_inicial,fecha_final):
     fecha_inicial = aentero(fecha_inicial)
     fecha_final = aentero(fecha_final)
     indiceinicial = busquedaano(obras,fecha_inicial,0,lt.size(obras) - 1,'menor','DateAcquired')
-    print(indiceinicial)
     if lt.getElement(obras,indiceinicial)['DateAcquired'] == '':
         return lt.newList(datastructure='ARRAY_LIST')
     indicefinal = busquedaano(obras,fecha_final,0,lt.size(obras) - 1,'mayor','DateAcquired')
-    print(indicefinal)
     rango = lt.subList(obras,indiceinicial,(indicefinal-indiceinicial+1))
     return rango
 
