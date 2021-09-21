@@ -50,11 +50,11 @@ def printMenu():
     print("0- Salir")
 
 
-def initCatalog(estructura):
+def initCatalog():
     """
     Inicializa el catalogo de obras
     """
-    return controller.initCatalog(estructura)
+    return controller.initCatalog()
 
 def loadData(catalog):
     """
@@ -62,11 +62,11 @@ def loadData(catalog):
     """
     controller.loadData(catalog)
 
-def organizarcatalog(catalog,ordenamiento):
+def organizarobras(catalog):
     """
     Organiza el catálogo por el método elegido
     """
-    controller.organizarcatalog(catalog,ordenamiento)
+    controller.organizarobras(catalog)
 
 catalog = None
 
@@ -77,11 +77,8 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        estructura = input('Escoja el tipo de estructura de datos escribiendo "ARRAY_LIST" o "SINGLE_LINKED": ')
-        while (estructura != "ARRAY_LIST") and (estructura != "SINGLE_LINKED"):
-            estructura = input('Escoja un tipo de estructura de datos válido escribiendo "ARRAY_LIST" o "SINGLE_LINKED": ')
         print("Cargando información de los archivos ....")
-        catalog = initCatalog(estructura)
+        catalog = initCatalog()
         loadData(catalog)
         print('Obras cargadas: ' + str(lt.size(catalog['obras'])))
         print('Artistas cargados: ' + str(lt.size(catalog['artistas'])))
@@ -93,21 +90,25 @@ while True:
         print(tresartistas)
 
     elif int(inputs[0]) == 3:
-        ordenamiento = input('Escoja el tipo de ordenamiento escribiendo "Insertion", "Shell", "Merge" o "Quick": ')
-        while (ordenamiento != "Insertion") and (ordenamiento != "Shell" and ordenamiento != "Merge") and (ordenamiento != "Quick"):
-            ordenamiento = input('Escoja un tipo de ordenamiento válido escribiendo "Insertion", "Shell", "Merge" o "Quick": ')
-        tamano_muestra = input('Indique el número de elementos de la muestra: ')
-        while int(tamano_muestra) > lt.size(catalog['obras']):
-            tamano_muestra = input('Indique un número menor al total de obras almacenadas: ')
-        muestra = lt.subList(catalog['obras'],1,int(tamano_muestra))
+        fecha_inicial = input('Escriba la fecha inicial en formato YYYY-MM-DD: ')
+        fecha_final = input('Escriba la fecha final en formato YYYY-MM-DD: ')
         start_time = time.process_time()
-        print('Organizando la muestra ...')
-        organizarcatalog(muestra,ordenamiento)
+        print('Organizando el catálogo ...')
+        organizarobras(catalog)
+        rangoobras = controller.rangoobras(catalog,fecha_inicial,fecha_final)
         stop_time = time.process_time()
         elapsed_time_mseg = (stop_time - start_time)*1000
-        print('El programa se demoró '+ str(elapsed_time_mseg) + ' en ordenar los datos de muestra por medio de ' + ordenamiento + 'sort.')
-
-
+        print('El programa se demoró '+ str(elapsed_time_mseg) + ' en ordenar los datos de muestra por medio de Merge sort.')
+        i = 0
+        print('Hay ' + str(lt.size(rangoobras)) + ' obras en el rango indicado.')
+        print(controller.no_compradas(rangoobras) + ' de estas obras fueron adquiridas por compra.')
+        print('Las 3 primeras y 3 últimas obras en el rango son:')
+        while i < 3:
+            print('Titulo: ' + (lt.getElement(rangoobras,i))['Title'] + '   Artista(s): ' + controller.buscarid((lt.getElement(rangoobras,i))['ConstituentID'],catalog) + '    Fecha: ' + (lt.getElement(rangoobras,i))['Date'] + '    Fecha de adquisición: ' + (lt.getElement(rangoobras,i))['DateAcquired'] + '   Medio: ' + (lt.getElement(rangoobras,i))['Medium'] + '    Dimensiones: ' + (lt.getElement(rangoobras,i))['Dimensions'])
+            i += 1
+        while i > 0:
+            print('Titulo: ' + (lt.getElement(rangoobras,lt.size(rangoobras) - i))['Title'] + '   Artista(s): ' + controller.buscarid((lt.getElement(rangoobras,lt.size(rangoobras) - i))['ConstituentID'],catalog) + '    Fecha: ' + (lt.getElement(rangoobras,lt.size(rangoobras) - i))['Date'] + '    Fecha de adquisición: ' + (lt.getElement(rangoobras,lt.size(rangoobras) - i))['DateAcquired'] + '   Medio: ' + (lt.getElement(rangoobras,lt.size(rangoobras) - i))['Medium'] + '    Dimensiones: ' + (lt.getElement(rangoobras,lt.size(rangoobras) - i))['Dimensions'])
+            i -= 1
 
     else:
         sys.exit(0)

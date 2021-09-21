@@ -23,6 +23,7 @@
 import config as cf
 import model
 import csv
+from DISClib.ADT import list as lt
 
 
 """
@@ -30,11 +31,11 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
-def initCatalog(estructura):
+def initCatalog():
     """
     Llama la funcion de inicializacion del catalogo del modelo.
     """
-    catalog = model.newCatalog(estructura)
+    catalog = model.newCatalog()
     return catalog
 
 # Funciones para la carga de datos
@@ -52,7 +53,7 @@ def loadObras(catalog):
     """
     Carga las obras del archivo.
     """
-    file = cf.data_dir + 'Artworks-utf8-large.csv'
+    file = cf.data_dir + 'Artworks-utf8-small.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
     for obra in input_file:
         model.addObra(catalog, obra)
@@ -63,16 +64,34 @@ def loadArtistas(catalog):
     cada uno de ellos, se crea en la lista de artistas, a dicho artista y una
     referencia a la obra que se esta procesando.
     """
-    file = cf.data_dir + 'Artists-utf8-large.csv'
+    file = cf.data_dir + 'Artists-utf8-small.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
     for artista in input_file:
         model.addArtista(catalog, artista)
 
 # Funciones de ordenamiento
-def organizarcatalog(catalog,ordenamiento):
+def organizarobras(catalog):
     """
     Organiza el catálogo por el método elegido
     """
-    model.organizarcatalog(catalog,ordenamiento)
+    model.organizarobras(catalog['obras'])
 
 # Funciones de consulta sobre el catálogo
+def rangoobras(catalog,fecha_inicial,fecha_final):
+    """
+    Crea y devuelve la sublista de catalog con las obras ordenadas desde una fecha
+    de inicio hasta otra de final.
+    """
+    return model.rangoobras(catalog['obras'],fecha_inicial,fecha_final)
+
+def no_compradas(lista):
+    return str(model.no_compradas(lista))
+
+def buscarid(id,catalog):
+    model.organizarartistas(catalog['artistas'])
+    elementos = model.buscarid(id,catalog['artistas'])
+    str = (lt.getElement(elementos,0))['DisplayName']
+    i = 1
+    while i < lt.size(elementos):
+        str += (', ' + (lt.getElement(elementos,1))['DisplayName'])
+    return str
