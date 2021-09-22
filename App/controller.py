@@ -76,7 +76,14 @@ def organizarobras(catalog):
     """
     model.organizarobras(catalog['obras'])
 
+def organizarartistas(catalog):
+    """
+    Organiza los artistas por el método elegido
+    """
+    model.organizarartistas(catalog['artistas'],'date')
+
 # Funciones de consulta sobre el catálogo
+    #Requerimientos 1 y 2
 def rangoobras(catalog,fecha_inicial,fecha_final):
     """
     Crea y devuelve la sublista de catalog con las obras ordenadas desde una fecha
@@ -88,10 +95,53 @@ def no_compradas(lista):
     return str(model.no_compradas(lista))
 
 def buscarid(id,catalog):
-    model.organizarartistas(catalog['artistas'])
+    model.organizarartistas(catalog['artistas'],'ID')
     elementos = model.buscarid(id,catalog['artistas'])
     str = (lt.getElement(elementos,0))['DisplayName']
     i = 1
     while i < lt.size(elementos):
-        str += (', ' + (lt.getElement(elementos,1))['DisplayName'])
+        str += (', ' + (lt.getElement(elementos,i))['DisplayName'])
+        i += 1
     return str
+
+def rangoartistas(catalog,fecha_inicial,fecha_final):
+    """
+    Crea y devuelve la sublista de catalog con los artistas ordenados desde una fecha
+    de inicio hasta otra de final.
+    """
+    return model.rangoartistas(catalog['artistas'],fecha_inicial,fecha_final)
+
+    #Requerimiento 3
+def obrasartista(catalog,nombre_artista):
+    """
+    Devuelve una lista con todas las obras de un artista
+    """
+    idartista = model.buscarnombre(catalog['artistas'],nombre_artista)
+    return model.obrasartista(catalog['obras'],idartista)
+
+def catalogarobras(obrasartista):
+    """
+    Cataloga las obras de un artista por técnica de creación
+    """
+    dicc = model.catalogarmedios(obrasartista)
+    return dicc
+
+def tecnicamayor(obrasartista):
+    """
+    Devuelve la técnica más usadas entre las obras del artista
+    """
+    return model.tecnicamayor(obrasartista)
+
+    #Requerimiento 5 
+def obrasdpto(catalog,dpto):
+    """
+    Devuelve una lista con todas las obras de un departamento
+    """
+    return model.obrasdpto(catalog['obras'],dpto)
+
+def agregarprecios(obras):
+    """
+    Agrega una columna de precio de transporte a cada obra en la lista
+    """
+    model.agregarprecios(obras)
+

@@ -25,9 +25,11 @@
  """
 
 
+from DISClib.DataStructures.arraylist import getElement
 from posixpath import split
 import config as cf
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
 from DISClib.Algorithms.Sorting import shellsort
 from DISClib.Algorithms.Sorting import quicksort 
 from DISClib.Algorithms.Sorting import insertionsort
@@ -64,21 +66,22 @@ def addArtista(catalog, artista):
 # Funciones para creacion de datos
 
 # Funciones de consulta
-def busquedabinaria(array, element, start, end):
+def busquedaID(array, element, start, end):
     if start > end:
         return -1
 
     mid = (start + end) // 2
-    if element == array[mid]:
+
+    if element == int(lt.getElement(array,mid)['ConstituentID']):
         return mid
 
-    if element < array[mid]:
-        return busquedabinaria(array, element, start, mid-1)
+    if element < int(lt.getElement(array,mid)['ConstituentID']):
+        return busquedaID(array, element, start, mid-1)
     else:
-        return busquedabinaria(array, element, mid+1, end)
+        return busquedaID(array, element, mid+1, end)
     
 def busquedaano(lista, ano, start, end, tipo,criterio):
-    if start != end:
+    if (start != end) and (end - start) > 1:
         mid = (start + end) // 2
         if ano == (aentero(lt.getElement(lista,mid)[criterio])):
             if tipo == 'menor':
@@ -97,12 +100,16 @@ def busquedaano(lista, ano, start, end, tipo,criterio):
         else:
             return busquedaano(lista, ano, mid+1, end,tipo,criterio)
     elif tipo == 'menor':
-            if ano == (aentero(lt.getElement(lista,end)[criterio])):
-                return end
-            elif ano > aentero(lt.getElement(lista,end)[criterio]):
-                while (ano > aentero(lt.getElement(lista,end)[criterio])) and aentero(lt.getElement(lista,end)[criterio]) != 0:
-                    end += 1
-            return end
+        if ano < (aentero(lt.getElement(lista,end)[criterio])):
+            while (ano < aentero(lt.getElement(lista,end)[criterio])) and aentero(lt.getElement(lista,end)[criterio]) != 0:
+                end -= 1
+            return end + 1    
+        elif ano > aentero(lt.getElement(lista,end)[criterio]):
+            
+            while (ano > aentero(lt.getElement(lista,end)[criterio])) and aentero(lt.getElement(lista,end)[criterio]) != 0:
+                end += 1
+            return end - 1      
+        return end
     elif tipo == 'mayor':
         if ano < aentero(lt.getElement(lista,end)[criterio]):
             while ano < aentero(lt.getElement(lista,end)[criterio]):
@@ -116,7 +123,7 @@ def buscarid(id,artistas):
     ids = y.split(',')
     indices = lt.newList(datastructure='ARRAY_LIST')
     for i in ids:
-        lt.addLast(indices,lt.getElement(artistas,(busquedabinaria(artistas,int(ids[i]),0,lt.size(artistas) - 1))))
+        lt.addLast(indices,lt.getElement(artistas,(busquedaID(artistas,int(i),0,lt.size(artistas) - 1))))
     return indices
 
 def aentero(str):
@@ -140,13 +147,102 @@ def rangoobras(obras,fecha_inicial,fecha_final):
     return rango
 
 def no_compradas(list):
-    i = 0
+    i = 1
     compradas = 0
-    while i < lt.size(list):
-        if (lt.getElement(list,0))['CreditLine'] == 'Purchase':
+    while i <= lt.size(list):
+        if 'purchase' in ((lt.getElement(list,i))['CreditLine']).lower():
             compradas += 1
         i += 1
     return compradas
+
+def rangoartistas(artistas,fecha_inicial,fecha_final):
+    """
+    Crea y devuelve la sublista de catalog con los artistas ordenados desde un año
+    de inicio hasta otro de final.
+    """
+    fecha_inicial = aentero(fecha_inicial)
+    fecha_final = aentero(fecha_final)
+    indiceinicial = busquedaano(artistas,fecha_inicial,0,lt.size(artistas) - 1,'menor','BeginDate')
+    if lt.getElement(artistas,indiceinicial)['BeginDate'] == '0':
+        return lt.newList(datastructure='ARRAY_LIST')
+    indicefinal = busquedaano(artistas,fecha_final,0,lt.size(artistas) - 1,'mayor','BeginDate')
+    rango = lt.subList(artistas,indiceinicial,(indicefinal-indiceinicial+1))
+    return rango
+    #Requerimiento 3
+def buscarnombre(artistas,nombre):
+    """
+    Encuentra el ID asociado a un nombre de artista que llega por parámetro
+    """
+    p = 1
+    while p <= lt.size(artistas):
+        if lt.getElement(artistas,p)['DisplayName'] == nombre:
+            return (lt.getElement(artistas,p)['ConstituentID'])
+        p += 1
+    return 0
+
+def obrasartista(lista,id):
+    obrasartista = lt.newList(datastructure='ARRAY_LIST')
+    z = 1
+    while z <= lt.size(lista):
+        idsobra = lt.getElement(lista,z)['ConstituentID']
+        x = idsobra.replace('[','')
+        y = x.replace(']','')
+        ids = y.split(',')
+        if id in ids:
+            lt.addLast(obrasartista,lt.getElement(lista,z))
+        z += 1
+    return obrasartista
+
+def catalogarmedios(lista):
+    dicc = mp.newMap(maptype='PROBING')
+    z = 1
+    while z <= lt.size(lista):
+        if not(mp.contains(dicc,(lt.getElement(lista,z))['Medium'])):
+            mp.put(dicc,(lt.getElement(lista,z))['Medium'],lt.newList(datastructure='ARRAY_LIST'))
+        lt.addLast((mp.get(dicc,(lt.getElement(lista,z))['Medium']))['value'],lt.getElement(lista,z))   
+        z += 1
+    return dicc
+
+def tecnicamayor(obrasartista):
+    """
+    Devuelve la técnica más usadas entre las obras del artista
+    """
+    iterador = lt.iterator(mp.keySet(obrasartista))
+    mayor = ''
+    for key in iterador:
+        if mayor != '':
+            if lt.size((mp.get(obrasartista,key))['value']) > lt.size((mp.get(obrasartista,mayor))['value']):
+                mayor = key                
+        else:
+            mayor = key
+    return mayor
+
+    #Requerimiento 5
+def obrasdpto(lista,dpto):
+    """
+    Devuelve una lista con las obras de un departamento
+    """
+    obrasdpto = lt.newList(datastructure='ARRAY_LIST')
+    z = 1
+    while z <= lt.size(lista):
+        if lt.getElement(lista,z)['Department'] == dpto:
+            lt.addLast(obrasdpto,lt.getElement(lista,z))
+        z += 1
+    return obrasdpto
+
+def agregarprecios(obras):
+    """
+    Agrega una columna de precio de transporte a cada obra en la lista
+    """
+    z = 1
+    while z <= lt.size(obras):
+        costofinal = 0
+        if lt.getElement(obras,z)['Weight (kg)'] != '':
+            costofinal = 72.00 * float(lt.getElement(obras,z)['Weight (kg)'])
+            
+        costo_area = 0
+        costo_volumen = 0
+    return None
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -169,9 +265,18 @@ def cmpArtistsByConstituentID(artist1, artist2):
     Devuelve verdadero (True) si el 'ConstituentID' de artist1 es menor que el de artist2
     Args:
     artist1: informacion del primer artista que incluye su valor 'ConstituentID'
-    artist2: informacion del segund artista que incluye su valor 'ConstituentID'
+    artist2: informacion del segundo artista que incluye su valor 'ConstituentID'
     """
-    return artist1['ConstituentID'] < artist2['ConstituentID']
+    return int(artist1['ConstituentID']) < int(artist2['ConstituentID'])
+
+def cmpArtistsByDate(artist1, artist2):
+    """
+    Devuelve verdadero (True) si el 'BeginDate' de artist1 es menor que el de artist2
+    Args:
+    artist1: informacion del primer artista que incluye su valor 'BeginDate'
+    artist2: informacion del segundo artista que incluye su valor 'BeginDate'
+    """
+    return int(artist1['BeginDate']) < int(artist2['BeginDate'])
 
 # Funciones de ordenamiento
 
@@ -181,8 +286,11 @@ def organizarobras(obras):
     """
     mergesort.sort(obras,cmpArtworkByDateAcquired)
 
-def organizarartistas(artistas):
+def organizarartistas(artistas,cmpf):
     """
     Organiza los artistas por el método elegido
     """
-    mergesort.sort(artistas,cmpArtistsByConstituentID)
+    if cmpf == 'ID':
+        mergesort.sort(artistas,cmpArtistsByConstituentID)
+    else:
+        mergesort.sort(artistas,cmpArtistsByDate)
