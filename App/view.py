@@ -45,9 +45,9 @@ def printMenu():
     print("2- Listar cronológicamente artistas")
     print("3- Listar cronológicamente adquisiciones")
     print("4- Clasificar las obras de un artista por técnica")
-    print("5- Clasificar obras por la nacionalidad de los artistas")
+    #print("5- Clasificar obras por la nacionalidad de los artistas")
     print("6- Transportar las obras de un departamento")
-    print("7- Crear una nueva exposición")
+    #print("7- Crear una nueva exposición")
     print("0- Salir")
 
 
@@ -97,7 +97,7 @@ def agregarprecios(obras):
     """
     Agrega una columna de precio de transporte a cada obra en la lista
     """
-    controller.agregarprecios(obras)
+    return controller.agregarprecios(obras)
 
 
 catalog = None
@@ -199,13 +199,45 @@ while True:
                 dimensiones = 'Desconocidas'
             print('Titulo: ' + (lt.getElement((mp.get(catalogarobra,tecnicamayor))['value'],i))['Title'] + '    Fecha: ' + (lt.getElement((mp.get(catalogarobra,tecnicamayor))['value'],i))['Date'] + '   Medio: ' + (lt.getElement((mp.get(catalogarobra,tecnicamayor))['value'],i))['Medium'] + '    Dimensiones: ' + dimensiones + '\n\n')
             i += 1
+        
     
     elif int(inputs[0]) == 6:
         dpto = input('Ingrese el departamento del museo que quiere trasportar: ')
+        start_time = time.process_time()
         obrasdpto = controller.obrasdpto(catalog,dpto)
-        #print(obrasdpto)
-        agregarprecios(obrasdpto)
-
+        costos = (agregarprecios(obrasdpto))[0]
+        costototal = (agregarprecios(obrasdpto))[1]
+        peso = (agregarprecios(obrasdpto))[2]
+        controller.organizarcostos(costos)
+        #print(costos)
+        print('\nCalculando costos de transporte...')
+        print('\nEl total de obras a transportar es de es de ' + str(lt.size(obrasdpto)))
+        print('\nEl servicio costará un total estimado de ' + str(round(costototal,3)) + 'USD')
+        print('\nEl peso estimado de la carga es de ' + str(round(peso,3)) + 'kg') 
+        print('\nLas 5 obras más costosas de transportar son:\n')
+        i = 1
+        while i <= 5:
+            dimensiones = lt.firstElement(lt.getElement(costos,i))['Dimensions']
+            if dimensiones == '':
+                dimensiones = 'Desconocidas'
+            print('Titulo: ' + lt.firstElement(lt.getElement(costos,i))['Title'] + '   Artista(s): ' + controller.buscarid(lt.firstElement(lt.getElement(costos,i))['ConstituentID'],catalog) + '    Fecha: ' + lt.firstElement(lt.getElement(costos,i))['Date'] + '    Clasificación: ' + lt.firstElement(lt.getElement(costos,i))['Classification'] + '\nMedio: ' + lt.firstElement(lt.getElement(costos,i))['Medium'] + '    Dimensiones: ' + dimensiones + '    Costo de transporte: ' + str(round(lt.lastElement(lt.getElement(costos,i)),3)) + '\n\n')
+            i += 1
+        controller.organizarfechas(costos)
+        print('\nLas 5 obras más antiguas a transportar son:\n')
+        aux = 0
+        i = 1
+        while aux < 5:
+            if lt.firstElement(lt.getElement(costos,i))['Date'] != '':
+                dimensiones = lt.firstElement(lt.getElement(costos,i))['Dimensions']
+                if dimensiones == '':
+                    dimensiones = 'Desconocidas'
+                print('Titulo: ' + lt.firstElement(lt.getElement(costos,i))['Title'] + '   Artista(s): ' + controller.buscarid(lt.firstElement(lt.getElement(costos,i))['ConstituentID'],catalog) + '    Fecha: ' + lt.firstElement(lt.getElement(costos,i))['Date'] + '    Clasificación: ' + lt.firstElement(lt.getElement(costos,i))['Classification'] + '\nMedio: ' + lt.firstElement(lt.getElement(costos,i))['Medium'] + '    Dimensiones: ' + dimensiones + '    Costo de transporte: ' + str(round(lt.lastElement(lt.getElement(costos,i)),3)) + '\n\n')
+                aux += 1 
+            i += 1
+        stop_time = time.process_time()
+        elapsed_time_mseg = (stop_time - start_time)*1000
+        print('\nEl programa se demoró '+ str(elapsed_time_mseg) + ' en ordenar los datos de muestra por medio de Merge sort.')
+        
     else:
         sys.exit(0)
 sys.exit(0)

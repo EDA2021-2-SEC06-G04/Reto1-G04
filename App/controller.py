@@ -53,7 +53,7 @@ def loadObras(catalog):
     """
     Carga las obras del archivo.
     """
-    file = cf.data_dir + 'Artworks-utf8-small.csv'
+    file = cf.data_dir + 'Artworks-utf8-large.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
     for obra in input_file:
         model.addObra(catalog, obra)
@@ -64,7 +64,7 @@ def loadArtistas(catalog):
     cada uno de ellos, se crea en la lista de artistas, a dicho artista y una
     referencia a la obra que se esta procesando.
     """
-    file = cf.data_dir + 'Artists-utf8-small.csv'
+    file = cf.data_dir + 'Artists-utf8-large.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
     for artista in input_file:
         model.addArtista(catalog, artista)
@@ -81,6 +81,18 @@ def organizarartistas(catalog):
     Organiza los artistas por el método elegido
     """
     model.organizarartistas(catalog['artistas'],'date')
+
+def organizarcostos(costos):
+    """
+    Organiza las obras por su costo de transporte
+    """
+    model.organizarcostos(costos)
+
+def organizarfechas(costos):
+    """
+    Organiza las obras por su año de creación
+    """
+    model.organizarfechas(costos)
 
 # Funciones de consulta sobre el catálogo
     #Requerimientos 1 y 2
@@ -143,5 +155,5 @@ def agregarprecios(obras):
     """
     Agrega una columna de precio de transporte a cada obra en la lista
     """
-    model.agregarprecios(obras)
+    return model.agregarprecios(obras)
 

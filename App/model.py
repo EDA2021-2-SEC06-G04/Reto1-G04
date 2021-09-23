@@ -210,10 +210,11 @@ def tecnicamayor(obrasartista):
     iterador = lt.iterator(mp.keySet(obrasartista))
     mayor = ''
     for key in iterador:
-        if mayor != '':
+        #if mayor != '':
+        try:
             if lt.size((mp.get(obrasartista,key))['value']) > lt.size((mp.get(obrasartista,mayor))['value']):
                 mayor = key                
-        else:
+        except:
             mayor = key
     return mayor
 
@@ -234,15 +235,46 @@ def agregarprecios(obras):
     """
     Agrega una columna de precio de transporte a cada obra en la lista
     """
+    costos = lt.newList(datastructure='ARRAY_LIST')
+    costototal = 0
     z = 1
     while z <= lt.size(obras):
         costofinal = 0
-        if lt.getElement(obras,z)['Weight (kg)'] != '':
+        pesofinal = 0
+        try:
             costofinal = 72.00 * float(lt.getElement(obras,z)['Weight (kg)'])
-            
-        costo_area = 0
-        costo_volumen = 0
-    return None
+            pesofinal += float(lt.getElement(obras,z)['Weight (kg)'])
+        except:
+            None
+        try:
+            costo_area = 72.00 * ((2 * 3.1416 * (float(lt.getElement(obras,z)['Diameter (cm)'])/2) * float(lt.getElement(obras,z)['Diameter (cm)']) + 2 * 3.1416 * ((float(lt.getElement(obras,z)['Diameter (cm)'])/2) ** 2))/10000)
+        except:
+            try:
+                costo_area = 72.00 * (((2 * float(lt.getElement(obras,z)['Height (cm)']) * (float(lt.getElement(obras,z)['Depth (cm)']) + float(lt.getElement(obras,z)['Width (cm)']))) + (2 * float(lt.getElement(obras,z)['Depth (cm)'] * float(lt.getElement(obras,z)['Width (cm)']))))/10000)
+            except:
+                try:
+                    costo_area = 72.00 * ((float(lt.getElement(obras,z)['Width (cm)']) * float(lt.getElement(obras,z)['Height (cm)']))/10000)
+                except:
+                    costo_area = 0
+        try:
+            costo_volumen = 72.00 * (((3.1416 * (float(lt.getElement(obras,z)['Diameter (cm)'])/2) ** 2) * (float(lt.getElement(obras,z)['Height (cm)'])))/1000000)
+        except:
+            try:
+                costo_volumen = 72.00 * ((float(lt.getElement(obras,z)['Width (cm)']) * float(lt.getElement(obras,z)['Height (cm)']) * float(lt.getElement(obras,z)['Depth (cm)']))/1000000)
+            except:
+                costo_volumen = 0
+        if costo_area > costofinal:
+            costofinal = costo_area
+        if costo_volumen > costofinal:
+            costofinal = costo_volumen
+        if costofinal == 0:
+            costofinal = 48.00
+        lt.addLast(costos,lt.newList('ARRAY_LIST'))
+        lt.addLast(lt.getElement(costos,z),lt.getElement(obras,z))
+        lt.addLast(lt.getElement(costos,z),costofinal)
+        costototal += costofinal
+        z += 1
+    return (costos,costototal,pesofinal)
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -278,6 +310,24 @@ def cmpArtistsByDate(artist1, artist2):
     """
     return int(artist1['BeginDate']) < int(artist2['BeginDate'])
 
+def cmpArtworkByCost(artwork1, artwork2):
+    """
+    Devuelve verdadero (True) si el costo de transporte de artwork1 es menores que el de artwork2
+    Args:
+    artwork1: informacion de la primera obra que incluye su costo de transporte
+    artwork2: informacion de la segunda obra que incluye su costo de transporte
+    """
+    return lt.lastElement(artwork1) > lt.lastElement(artwork2)
+
+def cmpArtworkByDate(artwork1, artwork2):
+    """
+    Devuelve verdadero (True) si el 'Date' de artwork1 es menores que el de artwork2
+    Args:
+    artwork1: informacion de la primera obra que incluye su valor 'Date'
+    artwork2: informacion de la segunda obra que incluye su valor 'Date'
+    """
+    return (lt.firstElement(artwork1)['Date'] < lt.firstElement(artwork2)['Date'])
+
 # Funciones de ordenamiento
 
 def organizarobras(obras):
@@ -294,3 +344,15 @@ def organizarartistas(artistas,cmpf):
         mergesort.sort(artistas,cmpArtistsByConstituentID)
     else:
         mergesort.sort(artistas,cmpArtistsByDate)
+
+def organizarcostos(costos):
+    """
+    Organiza los costos por el método elegido
+    """
+    mergesort.sort(costos,cmpArtworkByCost)
+
+def organizarfechas(costos):
+    """
+    Organiza las obras por su año de creación
+    """
+    mergesort.sort(costos,cmpArtworkByDate)
