@@ -194,7 +194,7 @@ def obrasartista(lista,id):
     return obrasartista
 
 def catalogarmedios(lista):
-    dicc = mp.newMap(maptype='PROBING')
+    dicc = mp.newMap(maptype='PROBING',numelements=25)
     z = 1
     while z <= lt.size(lista):
         if not(mp.contains(dicc,(lt.getElement(lista,z))['Medium'])):
